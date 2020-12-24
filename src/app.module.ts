@@ -9,20 +9,22 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === "dev" ? ".dev.env" : ".test.env",
+      ignoreEnvFile: process.env.NODE_ENV === "prod",
     }),
     TypeOrmModule.forRoot({
       "type": "postgres",
-      "host": "localhost",
-      "port": 5432,
-      "username": "postgres",
-      "password": "ksy1234!!",
-      "database": "nuber-eats",
+      "host": process.env.DB_HOST,
+      "port": +process.env.DB_PORT,
+      "username": process.env.DB_USERNAME,
+      "password": process.env.DB_PASSWORD,
+      "database": process.env.DB_NAME,
       "synchronize": true, // TYPEORM이 데이터베이스에 연결할 때 데이터베이스를 내 모듈의 현재 상태로 마이그레이션한다는 뜻
       "logging": true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
+    RestaurantsModule
   ],
   controllers: [],
   providers: [],
