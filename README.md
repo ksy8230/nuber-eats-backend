@@ -67,9 +67,9 @@ nest g application
 
 ### nestjs & graphql
 - graphql 파일을 따로 작성할 필요없이 @nestjs/graphql에서 제공하는 `Query를 이용하면 자동으로 해당 파일이 메모리에 생성된다
-- objectType
+- `@ObjectType` 는 자동으로 스키마를 빌드하기 위해 사용하는 graphql 데코레이터이다
 - argument
-- `InputType` 은 하나의 object, `ArgsType` 은 분리된 값들을 그래프큐엘 args로 전달 가능하게 만듦
+- `@InputType` 은 하나의 object, `@ArgsType` 은 분리된 값들을 그래프큐엘 args로 전달 가능하게 만듦
 - dto 유효성 검사하기 
 ```
 npm i class-validator
@@ -95,7 +95,16 @@ npm i --save @nestjs/config
 ```
 npm i cross-env
 ```
-- 환경변수 유효성 검사
+- 환경변수 유효성 검사를 해준다
+```
+npm i joi
+```
+- ts 파일에서 js 파일 모듈을 가져올 때 -> ex. import * as Joi from 'joi';
+- ####  TYPE ORM and NESTJS
+- entity는 데이터베이스에 저장되는 데이터의 형태를 보여주는 모델
+- `@Entity` 는 TYPEORM이 DB에 스키마를 저장하게 해 준다
+- `@ObjectType()`, `@Entity()` 이용하면 클래스 하나로 그래프큐엘 스키마와 디비에 저장되는 저장 형식을 한번에 생성 가능하다
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).

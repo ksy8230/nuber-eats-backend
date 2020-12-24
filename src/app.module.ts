@@ -5,6 +5,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,8 +28,9 @@ import * as Joi from 'joi';
       "username": process.env.DB_USERNAME,
       "password": process.env.DB_PASSWORD,
       "database": process.env.DB_NAME,
-      "synchronize": true, // TYPEORM이 데이터베이스에 연결할 때 데이터베이스를 내 모듈의 현재 상태로 마이그레이션한다는 뜻
+      "synchronize": true, // *TYPEORM이 데이터베이스에 연결할 때 데이터베이스를 내 모듈의 현재 상태로 마이그레이션한다는 뜻
       "logging": true,
+      "entities": [Restaurant]
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
