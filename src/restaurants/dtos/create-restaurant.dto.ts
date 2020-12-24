@@ -1,6 +1,6 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { ArgsType, Field, InputType } from "@nestjs/graphql";
 
-@InputType()
+@ArgsType()
 export class CreateRestaurantDto {
     @Field(() => String) 
     name: string;
@@ -10,7 +10,7 @@ export class CreateRestaurantDto {
 
     @Field(() => String) 
     address: string;
-    
+
     @Field(() => String) 
     ownerName: string;
 }
