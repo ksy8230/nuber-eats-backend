@@ -64,6 +64,8 @@ $ npm run test:cov
 ```
 nest g application
 ```
+
+### nestjs & graphql
 - graphql 파일을 따로 작성할 필요없이 @nestjs/graphql에서 제공하는 `Query를 이용하면 자동으로 해당 파일이 메모리에 생성된다
 - objectType
 - argument
@@ -73,8 +75,26 @@ nest g application
 npm i class-validator
 npm install class-transformer
 ```
-
-
+### database
+- `TYPE ORM`
+- - 직접 sql문을 작성해서 데이터베이스로 보내는 것도 가능하지만 `TYPE ORM`(객체 관계 매핑)을 쓰면 타입스크립트의 좋은 점을 이용할 수 있다. 타입을 쓸 수 있고 nestjs와 연계할 수 있고 데이터베이스 상호작용을 테스트할 수 있다.
+- - orm을 쓰면 어려운 sql문을 쓰는 대신 코드를 써서 상호작용할 수 있다.
+- - `TYPE ORM`은 nodejs에 많은 데이터베이스를 지원한다 (mysql, postgres, cockroachDB, MariaDB)
+- `Postql`, `pgAdmin` 프로그램 설치
+- `TYPE ORM` 과 동일한 기능을 제공하는 시퀄라이즈가 있지만 이건 js로 대부분 개발되어있고 nodejs에서만 동작하는 반면 `TYPE ORM`은 nodejs 뿐만 아니라 리액트네이티브 등 다양한 플랫폼을 지원한다.
+- #### install TYPE ORM for PostgreSQL
+```
+npm install --save @nestjs/typeorm typeorm pg
+```
+- nestjs에서 환경설정하기
+- 아래 모듈은 dotenv 최상위에서 실행되기 때문에 dotenv 내부에서 사용 가능하다
+```
+npm i --save @nestjs/config
+```
+- 플랫폼 환경에 구애 받지 않고 환경 변수를 사용할 수 있게 해준다
+```
+npm i cross-env
+```
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
