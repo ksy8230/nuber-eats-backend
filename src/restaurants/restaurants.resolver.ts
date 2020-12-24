@@ -13,11 +13,9 @@ export class RestaurantResolver {
         // @Args('isVegan') isVegan: boolean,
         // @Args('address') address: string,
         // @Args('ownerName') ownerName: string
-        @Args() CreateRestaurantDto : CreateRestaurantDto
+        @Args() createRestaurantDto : CreateRestaurantDto
     ): boolean {
-        console.log(CreateRestaurantDto)
+        console.log(createRestaurantDto)
         return true;
     }
-
-
 }

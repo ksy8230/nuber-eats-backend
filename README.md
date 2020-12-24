@@ -68,7 +68,11 @@ nest g application
 - objectType
 - argument
 - `InputType` 은 하나의 object, `ArgsType` 은 분리된 값들을 그래프큐엘 args로 전달 가능하게 만듦
-
+- dto 유효성 검사하기 
+```
+npm i class-validator
+npm install class-transformer
+```
 
 
 ## Support
