@@ -64,8 +64,9 @@ $ npm run test:cov
 ```
 nest g application
 ```
-- graphql 파일을 따로 작성할 필요없이 @nestjs/graphql에서 제공하는 `Query`를 이용하면 자동으로 해당 파일이 메모리에 생성된다
+- graphql 파일을 따로 작성할 필요없이 @nestjs/graphql에서 제공하는 `Query를 이용하면 자동으로 해당 파일이 메모리에 생성된다
 - objectType
+- argument
 
 
 

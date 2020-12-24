@@ -7,5 +7,5 @@ export class Restaurant {
     @Field(() => String)
     name : string;
     @Field(() => Boolean, {nullable:true}) // 필수값이 아니다
-    ifGood?: boolean
+    isGood?: boolean
 }
