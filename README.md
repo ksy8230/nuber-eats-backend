@@ -104,6 +104,14 @@ npm i joi
 - entity는 데이터베이스에 저장되는 데이터의 형태를 보여주는 모델
 - `@Entity` 는 TYPEORM이 DB에 스키마를 저장하게 해 준다
 - `@ObjectType()`, `@Entity()` 이용하면 클래스 하나로 그래프큐엘 스키마와 디비에 저장되는 저장 형식을 한번에 생성 가능하다
+- ##### repository를 import하면 데이터베이스와 상호작용이 가능하다
+- 0. app 모듈에 TypeOrmModule에 `"entities": [Restaurant]` 연결되어 있다. (DB)
+- 1. 해당 모듈 파일에서 Typeorm을 이용해서 해당 entity를 import함으로서 repository를 추가
+- 2. 해당 service 파일에서 repository를 사용하기 위한 작업
+- - 해당 모듈 파일에서 providers에 해당 service가 추가되어야 함
+- - 해당 모듈 resolver에서 해당 모듈 service를 constructor에 추가
+- 3. 해당 resolver는 this.해당service.getAll() 식으로 서비스 파일 함수 작성 가능
+- - 해당 서비스 파일에서 @InjectRepository(해당 entity)를 추가하여 db 접근
 
 ## Support
 
