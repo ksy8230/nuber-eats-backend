@@ -1,5 +1,6 @@
 import { ArgsType, Field, InputType } from "@nestjs/graphql";
 import { IsBoolean, IsString, Length } from "class-validator";
+import { Column } from "typeorm";
 @ArgsType()
 export class CreateRestaurantDto {
     @Field(() => String)
@@ -18,4 +19,8 @@ export class CreateRestaurantDto {
     @Field(() => String) 
     @IsString()
     ownerName: string;
+
+    @Field(() => String)
+    @Column()
+    categoryName: string
 }

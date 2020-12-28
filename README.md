@@ -86,6 +86,8 @@ npm i cross-env
 npm i joi
 ```
 - ts 파일에서 js 파일 모듈을 가져올 때 -> ex. import * as Joi from 'joi';
+
+
 #### TYPE ORM and NESTJS
 - entity는 데이터베이스에 저장되는 데이터의 형태를 보여주는 모델
 - `@Entity` 는 TYPEORM이 DB에 스키마를 저장하게 해 준다
