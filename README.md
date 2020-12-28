@@ -101,3 +101,9 @@ npm i joi
 - - 해당 모듈 resolver에서 해당 모듈 service를 constructor에 추가
 - 3. 해당 resolver는 this.해당service.getAll() 식으로 서비스 파일 함수 작성 가능
 - - 해당 서비스 파일에서 @InjectRepository(해당 entity)를 추가하여 db 접근
+
+
+#### 이슈 리스트
+- 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
+- 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
+- 해결 : 부모 entity  `@PrimaryColumn()` -> `@PrimaryGeneratedColumn()`으로 변경

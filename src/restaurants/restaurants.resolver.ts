@@ -18,7 +18,7 @@ export class RestaurantResolver {
             await this.restaurantService.createRestaurant(createRestaurantDto);
             return true;
         } catch (e) {
-            console.log(e);
+            console.dir(e);
             return false;
         }
     }
