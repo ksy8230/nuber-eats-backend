@@ -101,6 +101,8 @@ npm i joi
 - - 해당 모듈 resolver에서 해당 모듈 service를 constructor에 추가
 - 3. 해당 resolver는 this.해당service.getAll() 식으로 서비스 파일 함수 작성 가능
 - - 해당 서비스 파일에서 @InjectRepository(해당 entity)를 추가하여 db 접근
+- @InputType(), @ArgsType()의 차이
+- argument가 많은 resolver 함수 줄여서 사용하는 법 (dto 사용하기)
 
 
 #### 이슈 리스트
