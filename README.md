@@ -115,6 +115,12 @@ npm i joi
 - password
 - role (client|owner|delivery)
 
+2. 비밀번호 bcrypt
+```
+npm i bcrypt
+```
+- User Entity에서 `@BeforeInsert()`를 사용해 DB에 password를 넣기 전에 해싱한다
+
 #### 이슈 리스트
 - 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
