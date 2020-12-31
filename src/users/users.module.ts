@@ -7,5 +7,6 @@ import { UsersResolver } from './users.resolver';
   imports: [TypeOrmModule.forFeature([User])],
   // global 모듈인 ConfigService, JwtService의 경우 생략해줘야 한다
   providers: [UsersResolver, UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
