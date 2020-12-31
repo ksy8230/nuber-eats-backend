@@ -147,8 +147,10 @@ npm i jsonwebtoken @types/jsonwebtoken
 - - 토큰을 http headers에 넣어 보내면 이 `토큰`은 `request`로 보내진다
 - - 이 request가 `jwtMiddleware`에서 멈춘다
 - - `jwtMiddleware`가 토큰을 찾고(decode) 이것을 `request user`에 넣어준다
-- - request가 `graphql 모듈`로 와서 `context`안에 들어온다
-- - ! context는 매요청마다 호출된다
+- - request가 `graphql 모듈`로 와서 `context`안에 들어온다 (! context는 매요청마다 호출된다)
+- - `authorization guard`를 거쳐서 `resolver`에 도착하면
+- - 직접 만든 `UseGuards 데코레이터`로 context를 가져다가 graphql context를 가져온다
+- - `graphql context`에서 `user를 리턴`한다
 6. AuthGuard
 ```
 nest g mo auth
