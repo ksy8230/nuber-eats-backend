@@ -119,7 +119,9 @@ npm i joi
 ```
 npm i bcrypt
 ```
-- User Entity에서 `@BeforeInsert()`를 사용해 DB에 password를 넣기 전에 해싱한다
+- User Entity에서 `@BeforeInsert()`를 사용해 DB에 password를 넣기 전에 
+- 비밀번호를 백엔드에서 해싱은 가능하나 해싱된 비밀번호를 다시 원복할 수 없다 (해싱은 단방향만)
+- 해싱은 고유하다 (ex. 1234 -> #$FE@SEWE 값은 달라지지 않는다) 따라서 1234를 받아와서 해싱을 하고 그 해싱된 값이 db와 일치하는지 체크한다
 
 #### 이슈 리스트
 - 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
