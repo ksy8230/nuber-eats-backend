@@ -110,11 +110,9 @@ npm i joi
 - id
 - createAt
 - updatedAt
-
 - email
 - password
 - role (client|owner|delivery)
-
 2. 비밀번호 bcrypt
 ```
 npm i bcrypt
@@ -122,7 +120,6 @@ npm i bcrypt
 - User Entity에서 `@BeforeInsert()`를 사용해 DB에 password를 넣기 전에 
 - 비밀번호를 백엔드에서 해싱은 가능하나 해싱된 비밀번호를 다시 원복할 수 없다 (해싱은 단방향만)
 - 해싱은 고유하다 (ex. 1234 -> #$FE@SEWE 값은 달라지지 않는다) 따라서 1234를 받아와서 해싱을 하고 그 해싱된 값이 db와 일치하는지 체크한다
-
 3. jwt token 구현하기
 ```
 npm i jsonwebtoken @types/jsonwebtoken
@@ -142,10 +139,16 @@ npm i jsonwebtoken @types/jsonwebtoken
     JwtService,
   ],
 ```
-
 4. middleware
 - token을 받아서 나인지 확인하는 중간 미들웨어 구현
-
+5. graphql context
+> 아폴로 서버, 그래프 큐엘은 context를 가지고 있고 context에 어떤 것들을 지정하더라도 resolver에서 확인 가능하다
+- 나인지 확인하는 로직
+- - 토큰을 http headers에 넣어 보내면 이 `토큰`은 `request`로 보내진다
+- - 이 request가 `jwtMiddleware`에서 멈춘다
+- - `jwtMiddleware`가 토큰을 찾고(decode) 이것을 `request user`에 넣어준다
+- - request가 `graphql 모듈`로 와서 `context`안에 들어온다
+- - ! context는 매요청마다 호출된다
 #### 이슈 리스트
 - 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
