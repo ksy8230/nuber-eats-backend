@@ -123,6 +123,14 @@ npm i bcrypt
 - 비밀번호를 백엔드에서 해싱은 가능하나 해싱된 비밀번호를 다시 원복할 수 없다 (해싱은 단방향만)
 - 해싱은 고유하다 (ex. 1234 -> #$FE@SEWE 값은 달라지지 않는다) 따라서 1234를 받아와서 해싱을 하고 그 해싱된 값이 db와 일치하는지 체크한다
 
+3. jwt token 구현하기
+```
+npm i jsonwebtoken @types/jsonwebtoken
+```
+- token에 담긴 정보를 알아내는 것이 어렵지 않기 때문에 민감한 정보보다는 아이디 식별 정도에 사용하는 것이 좋다
+- user 모듈에 `ConfigService`를 import해서 ConfigService를 user.service에서 사용 가능하게 하면 nestjs 방식으로 환경변수를 사용할 수 있다
+
+
 #### 이슈 리스트
 - 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
