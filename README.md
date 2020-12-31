@@ -132,7 +132,16 @@ npm i jsonwebtoken @types/jsonwebtoken
 
 4. jwt module 직접 구현해서 ConfigService처럼 사용하기
 - JwtModule 에서 forRoot 함수 구현 (설정이 가능한 동적 모듈을 리턴, JwtService를 export해서 user 모듈에서 사용 가능)
-- 
+- 모듈의 proviers를 상세코드로 바꿔보면 아래와 같다
+```
+      providers: [
+        {
+          provide: CONFIG_OPTIONS, // 커스텀 이름
+          useValue: options, 
+        },
+        JwtService,
+      ],
+```
 
 #### 이슈 리스트
 - 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
