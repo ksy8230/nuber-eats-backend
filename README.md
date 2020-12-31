@@ -130,18 +130,21 @@ npm i jsonwebtoken @types/jsonwebtoken
 - token에 담긴 정보를 알아내는 것이 어렵지 않기 때문에 민감한 정보보다는 아이디 식별 정도에 사용하는 것이 좋다
 - user 모듈에 `ConfigService`를 import해서 ConfigService를 user.service에서 사용 가능하게 하면 nestjs 방식으로 환경변수를 사용할 수 있다
 
-4. jwt module 직접 구현해서 ConfigService처럼 사용하기
+- - jwt module 직접 구현해서 ConfigService처럼 사용하기
 - JwtModule 에서 forRoot 함수 구현 (설정이 가능한 동적 모듈을 리턴, JwtService를 export해서 user 모듈에서 사용 가능)
 - 모듈의 proviers를 상세코드로 바꿔보면 아래와 같다
 ```
-      providers: [
-        {
-          provide: CONFIG_OPTIONS, // 커스텀 이름
-          useValue: options, 
-        },
-        JwtService,
-      ],
+  providers: [
+    {
+      provide: CONFIG_OPTIONS, // 커스텀 이름
+      useValue: options, 
+    },
+    JwtService,
+  ],
 ```
+
+4. middleware
+- token을 받아서 나인지 확인하는 중간 미들웨어 구현
 
 #### 이슈 리스트
 - 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
