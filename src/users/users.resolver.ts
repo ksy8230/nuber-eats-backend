@@ -7,6 +7,7 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { LoginInput, LogInOutput } from './dtos/login.dto';
+import { EditProfileInput, EditProfileOut } from './dtos/user.profile-edit.dto';
 import { UserProfileInput, UserProfileOutput } from './dtos/user.profile.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -56,6 +57,8 @@ export class UsersResolver {
   @Query(() => User)
   @UseGuards(AuthGuard)
   me(@AuthUser() authUser: User) {
+    // AuthUser 는 현재 로그인한 사용자 정보를 준다
+    // 데코레이터를 사용해서 authenticate된 유저를 담아준다
     console.log(authUser);
     return authUser;
   }
@@ -78,6 +81,22 @@ export class UsersResolver {
       return {
         error: '찾을 수 없습니다',
         ok: false,
+      };
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(() => EditProfileOut)
+  async editProfile(
+    @AuthUser() authUser: User,
+    @Args('input') editProfileInput: EditProfileInput,
+  ): Promise<EditProfileOut> {
+    try {
+      await this.usersService.editProfile(authUser.id, editProfileInput);
+    } catch (e) {
+      return {
+        ok: false,
+        error: e,
       };
     }
   }
