@@ -93,6 +93,9 @@ export class UsersResolver {
   ): Promise<EditProfileOut> {
     try {
       await this.usersService.editProfile(authUser.id, editProfileInput);
+      return {
+        ok: true,
+      };
     } catch (e) {
       return {
         ok: false,

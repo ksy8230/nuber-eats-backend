@@ -73,7 +73,10 @@ export class UsersService {
     return this.users.findOne({ id });
   }
 
-  async editProfile(userId: number, { email, password }: EditProfileInput) {
-    return this.users.update({ id: userId }, { email, password });
+  async editProfile(userId: number, EditProfileInput: EditProfileInput) {
+    // password는 수정하고 싶지 않거나 email은 수정하고 싶지 않을 때
+    // 구조분해방식 ({password, email}) 으로 넘기지 말고 위와 같이 수정 후 아래처럼
+    // 받은 것들만 {} 객체에 넣도록 수정
+    return this.users.update({ id: userId }, { ...EditProfileInput });
   }
 }
