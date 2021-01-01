@@ -73,10 +73,21 @@ export class UsersService {
     return this.users.findOne({ id });
   }
 
-  async editProfile(userId: number, EditProfileInput: EditProfileInput) {
+  async editProfile(userId: number, { email, password }: EditProfileInput) {
     // password는 수정하고 싶지 않거나 email은 수정하고 싶지 않을 때
-    // 구조분해방식 ({password, email}) 으로 넘기지 말고 위와 같이 수정 후 아래처럼
-    // 받은 것들만 {} 객체에 넣도록 수정
-    return this.users.update({ id: userId }, { ...EditProfileInput });
+    // 구조분해방식 ({password, email}) 으로 넘기지 말고 EditProfileInput 같이 수정 후
+    // 받은 것들만 {...EditProfileInput} 객체에 넣도록 수정
+    // 근데 여기 코드에서는 update 메서드가 엔티티를 업데이트하지 않아서 password가 해싱되지 않는 에러가 떴다
+
+    const user = await this.users.findOne(userId);
+    if (email) {
+      user.email = email;
+    }
+    if (password) {
+      user.password = password;
+    }
+    // update 메서드는 쿼리를 db에 보낼 뿐 entity를 업데이트하지 않는다
+    // save 메서드로 수정하고 js로 직접 업데이트 수정
+    return this.users.save(user);
   }
 }

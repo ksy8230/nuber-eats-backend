@@ -157,6 +157,10 @@ nest g mo auth
 ```
 - nextjs에서 제공하는 guard를 사용해서 auth 기능 사용하기
 #### 이슈 리스트
-- 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
+1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
 - 해결 : 부모 entity  `@PrimaryColumn()` -> `@PrimaryGeneratedColumn()`으로 변경
+
+2. 이슈 : 비밀번호 수정 시 해싱되지 않고 디비에 저장된다
+- 원인 : this.users.update(....); <- update 메서드가 엔티티를 업데이트하지 않음
+- 해결 : this.users.save(...) 로 수정
