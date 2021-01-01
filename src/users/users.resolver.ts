@@ -7,6 +7,7 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { LoginInput, LogInOutput } from './dtos/login.dto';
+import { UserProfileInput, UserProfileOutput } from './dtos/user.profile.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -57,5 +58,27 @@ export class UsersResolver {
   me(@AuthUser() authUser: User) {
     console.log(authUser);
     return authUser;
+  }
+
+  @Query(() => UserProfileOutput)
+  @UseGuards(AuthGuard) // UseGuards가 있기 때문에 token의 유무에 따라 아래 요청이 가능하다
+  async userProfile(
+    @Args() userProfileInput: UserProfileInput,
+  ): Promise<UserProfileOutput> {
+    try {
+      const user = await this.usersService.findById(userProfileInput.userId);
+      if (!user) {
+        throw Error();
+      }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (e) {
+      return {
+        error: '찾을 수 없습니다',
+        ok: false,
+      };
+    }
   }
 }
