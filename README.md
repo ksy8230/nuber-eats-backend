@@ -175,3 +175,7 @@ const verification = await this.verifications.findOne(
 2. 이슈 : 비밀번호 수정 시 해싱되지 않고 디비에 저장된다
 - 원인 : this.users.update(....); <- update 메서드가 엔티티를 업데이트하지 않음
 - 해결 : this.users.save(...) 로 수정
+
+3. 이슈: 유저 정보를 업데이트하거나 email 인증을 하면 비밀번호가 갱신된다
+- 원인 : 유저 정보를 업데이트하거나 email 인증을 하면 `this.users.save` 함수가 실행되면서 `@BeforeInsert(), @BeforeUpdate() ` hook이 실행되어 해싱이 두번 된다.
+- 해결 : password 컬럼을 `{ select: false }`로 설정하여 비밀번호가 선택된 경우에만(비밀번호가 있는 경우에만) `@BeforeInsert(), @BeforeUpdate() ` hook에서 해싱되도록 수정

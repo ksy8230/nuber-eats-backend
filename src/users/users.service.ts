@@ -48,7 +48,10 @@ export class UsersService {
     // check if the pw is correct
     // make a JWT ans give it to the user
     try {
-      const user = await this.users.findOne({ email });
+      const user = await this.users.findOne(
+        { email },
+        { select: ['id', 'password'] }, // password 컬럼이 select: false로 되어 있기 때문에 따로 넣어줘야 유저 정보에 password가 담긴다
+      );
       if (!user) {
         return {
           ok: false,
@@ -62,6 +65,7 @@ export class UsersService {
           error: '비밀번호가 틀렸습니다.',
         };
       }
+      console.log(user);
       const token = this._JwtService.sign(user.id);
       return {
         ok: true,
@@ -86,6 +90,7 @@ export class UsersService {
     // 근데 여기 코드에서는 update 메서드가 엔티티를 업데이트하지 않아서 password가 해싱되지 않는 에러가 떴다
 
     const user = await this.users.findOne(userId);
+    console.log('editProfile', user);
     if (email) {
       user.email = email;
       user.verified = false;
@@ -100,13 +105,19 @@ export class UsersService {
   }
 
   async verifyEmail(code: string): Promise<boolean> {
-    const verification = await this.verifications.findOne(
-      { code },
-      { relations: ['user'] },
-    );
-    if (verification) {
-      verification.user.verified = true;
-      this.users.save(verification.user);
+    try {
+      const verification = await this.verifications.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.verified = true;
+        this.users.save(verification.user);
+        return true;
+      }
+    } catch (e) {
+      console.log(e);
+      return false;
     }
     return false;
   }
