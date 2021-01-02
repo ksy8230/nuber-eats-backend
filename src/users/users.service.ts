@@ -98,4 +98,16 @@ export class UsersService {
     // save 메서드로 수정하고 js로 직접 업데이트 수정
     return this.users.save(user);
   }
+
+  async verifyEmail(code: string): Promise<boolean> {
+    const verification = await this.verifications.findOne(
+      { code },
+      { relations: ['user'] },
+    );
+    if (verification) {
+      verification.user.verified = true;
+      this.users.save(verification.user);
+    }
+    return false;
+  }
 }

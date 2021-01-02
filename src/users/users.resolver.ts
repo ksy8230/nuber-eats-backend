@@ -3,6 +3,10 @@ import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import {
+  VerifyEmailInput,
+  VerifyEmailOutput,
+} from 'src/common/dtos/verify-email.dto';
+import {
   CreateAccountInput,
   CreateAccountOutput,
 } from './dtos/create-account.dto';
@@ -102,5 +106,10 @@ export class UsersResolver {
         error: e,
       };
     }
+  }
+
+  @Mutation(() => VerifyEmailOutput)
+  verifyEmail(@Args('input') verifyEmailInput: VerifyEmailInput) {
+    this.usersService.verifyEmail(verifyEmailInput.code);
   }
 }

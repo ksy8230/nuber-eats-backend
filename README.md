@@ -159,7 +159,14 @@ nest g mo auth
 - nextjs에서 제공하는 guard를 사용해서 auth 기능 사용하기
 
 7. verify email
-- 
+- service 파일에서 db 테이블간의 관계가 있을 때 관련된 다른 테이블 정보를 가져오고 싶으면 아래와 같이 기재. 
+```
+const verification = await this.verifications.findOne(
+    { code },
+    { relations: ['user'] }, // 관련된 user 전체 정보를 가져옴
+    // {loadRelationIds: true} // 관련된 user id만 가져옴
+  );
+```
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
