@@ -151,11 +151,15 @@ npm i jsonwebtoken @types/jsonwebtoken
 - - `authorization guard`를 거쳐서 `resolver`에 도착하면
 - - 직접 만든 `@UseGuards(AuthGuard)`로 context를 가져다가 graphql context를 가져온다
 - - `graphql context`에서 `user를 리턴`한다
+
 6. AuthGuard
 ```
 nest g mo auth
 ```
 - nextjs에서 제공하는 guard를 사용해서 auth 기능 사용하기
+
+7. verify email
+- 
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
