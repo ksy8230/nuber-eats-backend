@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateAccountInput } from './dtos/create-account.dto';
-import { LoginInput } from './dtos/login.dto';
+import {
+  CreateAccountInput,
+  CreateAccountOutput,
+} from './dtos/create-account.dto';
+import { LoginInput, LogInOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 // import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../jwt/jwt.service';
-import { EditProfileInput } from './dtos/user.profile-edit.dto';
+import { EditProfileInput, EditProfileOut } from './dtos/user.profile-edit.dto';
 import { Verification } from './entities/verification.entity';
+import { UserProfileOutput } from './dtos/user.profile.dto';
+import { VerifyEmailOutput } from 'src/common/dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +28,7 @@ export class UsersService {
     email,
     password,
     role,
-  }: CreateAccountInput): Promise<{ ok: boolean; error?: string }> {
+  }: CreateAccountInput): Promise<CreateAccountOutput> {
     try {
       const exists = await this.users.findOne({ email });
       if (exists) {
@@ -40,10 +45,7 @@ export class UsersService {
     }
   }
 
-  async login({
-    email,
-    password,
-  }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
+  async login({ email, password }: LoginInput): Promise<LogInOutput> {
     // find the user with the email
     // check if the pw is correct
     // make a JWT ans give it to the user
@@ -79,32 +81,59 @@ export class UsersService {
     }
   }
 
-  async findById(id: number): Promise<User> {
-    return this.users.findOne({ id });
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOne({ id });
+      if (user) {
+        return {
+          ok: true,
+          user: user,
+        };
+      }
+      throw Error();
+    } catch (error) {
+      return {
+        ok: false,
+        error: '유저를 찾을 수 없습니다.',
+      };
+    }
   }
 
-  async editProfile(userId: number, { email, password }: EditProfileInput) {
+  async editProfile(
+    userId: number,
+    { email, password }: EditProfileInput,
+  ): Promise<EditProfileOut> {
     // password는 수정하고 싶지 않거나 email은 수정하고 싶지 않을 때
     // 구조분해방식 ({password, email}) 으로 넘기지 말고 EditProfileInput 같이 수정 후
     // 받은 것들만 {...EditProfileInput} 객체에 넣도록 수정
     // 근데 여기 코드에서는 update 메서드가 엔티티를 업데이트하지 않아서 password가 해싱되지 않는 에러가 떴다
 
-    const user = await this.users.findOne(userId);
-    console.log('editProfile', user);
-    if (email) {
-      user.email = email;
-      user.verified = false;
-      await this.verifications.save(this.verifications.create({ user }));
+    try {
+      const user = await this.users.findOne(userId);
+      console.log('editProfile', user);
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        await this.verifications.save(this.verifications.create({ user }));
+      }
+      if (password) {
+        user.password = password;
+      }
+      // update 메서드는 쿼리를 db에 보낼 뿐 entity를 업데이트하지 않는다
+      // save 메서드로 수정하고 js로 직접 업데이트 수정
+      await this.users.save(user);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: '업데이트를 할 수 없습니다.',
+      };
     }
-    if (password) {
-      user.password = password;
-    }
-    // update 메서드는 쿼리를 db에 보낼 뿐 entity를 업데이트하지 않는다
-    // save 메서드로 수정하고 js로 직접 업데이트 수정
-    return this.users.save(user);
   }
 
-  async verifyEmail(code: string): Promise<boolean> {
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       const verification = await this.verifications.findOne(
         { code },
@@ -113,12 +142,16 @@ export class UsersService {
       if (verification) {
         verification.user.verified = true;
         this.users.save(verification.user);
-        return true;
+        return {
+          ok: true,
+        };
       }
-    } catch (e) {
-      console.log(e);
-      return false;
+      throw Error();
+    } catch (error) {
+      return {
+        ok: false,
+        error: '이메일 인증을 할 수 없습니다',
+      };
     }
-    return false;
   }
 }
