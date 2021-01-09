@@ -167,6 +167,18 @@ const verification = await this.verifications.findOne(
     // {loadRelationIds: true} // 관련된 user id만 가져옴
   );
 ```
+
+8. jest (test)
+- package.json 에서 루트 경로 설정해서 절대경로로 파일을 import 한다
+```
+  "jest": {
+    "moduleNameMapper":{
+      "^src/(.*)":"<rootDir>/$1"
+    },
+    ...
+```
+- unit test : 코드 각 줄이 의도한 대로 실행하는지
+- - `mock` 
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
