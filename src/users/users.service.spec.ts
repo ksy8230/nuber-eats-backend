@@ -14,7 +14,7 @@ const mockRepository = () => ({
 });
 
 const mockJwtService = {
-  sign: jest.fn(),
+  sign: jest.fn(() => 'signed-token-baby'),
   verify: jest.fn(),
 };
 
@@ -30,8 +30,9 @@ describe('UserService', () => {
   let usersRepository: MockRepository<User>;
   let verificationsRepository: MockRepository<Verification>;
   let mailService: MailService;
+  let jwtService: JwtService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -57,6 +58,7 @@ describe('UserService', () => {
     usersRepository = module.get(getRepositoryToken(User));
     verificationsRepository = module.get(getRepositoryToken(Verification));
     mailService = module.get<MailService>(MailService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
@@ -126,6 +128,64 @@ describe('UserService', () => {
       expect(result).toEqual({
         ok: false,
         error: '계정을 생성할 수 없습니다.',
+      });
+    });
+  });
+
+  describe('login', () => {
+    const loginArgs = {
+      email: 'bs@email.com',
+      password: 'testpw',
+    };
+
+    it('should fail if this user is not existed', async () => {
+      usersRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.login(loginArgs);
+
+      expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(usersRepository.findOne).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+      );
+
+      expect(result).toEqual({
+        ok: false,
+        error: '유저를 찾을 수 없습니다.',
+      });
+    });
+
+    it('should fail if the pw id wrong', async () => {
+      const mockedUser = {
+        checkPassword: jest.fn(() => Promise.resolve(false)), // () => false
+      };
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+      const result = await service.login(loginArgs);
+      expect(result).toEqual({
+        ok: false,
+        error: '비밀번호가 틀렸습니다.',
+      });
+    });
+
+    it('should return token if pw correct', async () => {
+      const mockedUser = {
+        id: 1,
+        checkPassword: jest.fn(() => Promise.resolve(true)), // () => true
+      };
+
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+      const result = await service.login(loginArgs);
+      expect(jwtService.sign).toHaveBeenCalledTimes(1);
+      expect(jwtService.sign).toHaveBeenCalledWith(mockedUser.id);
+      expect(result).toEqual({ ok: true, token: 'signed-token-baby' });
+    });
+
+    it('should fail on exception', async () => {
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.login(loginArgs);
+      expect(result).toEqual({
+        ok: false,
+        error: '로그인을 할 수 없습니다',
       });
     });
   });

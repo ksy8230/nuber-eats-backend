@@ -8,11 +8,11 @@ import {
 import { LoginInput, LogInOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 // import { ConfigService } from '@nestjs/config';
-import { JwtService } from '../jwt/jwt.service';
 import { EditProfileInput, EditProfileOut } from './dtos/user.profile-edit.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user.profile.dto';
 import { VerifyEmailOutput } from 'src/common/dtos/verify-email.dto';
+import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class UsersService {
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     // private readonly config: ConfigService,
-    private readonly _JwtService: JwtService,
+    private readonly JwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
 
@@ -74,7 +74,7 @@ export class UsersService {
         };
       }
       console.log(user);
-      const token = this._JwtService.sign(user.id);
+      const token = this.JwtService.sign(user.id);
       return {
         ok: true,
         token,
@@ -82,7 +82,7 @@ export class UsersService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: '로그인을 할 수 없습니다',
       };
     }
   }
