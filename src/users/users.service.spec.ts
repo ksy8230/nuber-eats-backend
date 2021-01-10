@@ -11,6 +11,7 @@ const mockRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
+  findOneOrFail: jest.fn(),
 });
 
 const mockJwtService = {
@@ -186,6 +187,20 @@ describe('UserService', () => {
       expect(result).toEqual({
         ok: false,
         error: '로그인을 할 수 없습니다',
+      });
+    });
+  });
+
+  describe('findById', () => {
+    it('should find an existing user', async () => {
+      const findByArgs = {
+        id: 1,
+      };
+      usersRepository.findOneOrFail.mockResolvedValue(findByArgs);
+      const result = await service.findById(1);
+      expect(result).toEqual({
+        ok: false,
+        error: '유저를 찾을 수 없습니다.',
       });
     });
   });
