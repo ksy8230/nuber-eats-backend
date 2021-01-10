@@ -83,6 +83,7 @@ describe('UserService', () => {
         error: '사용자가 이미 존재합니다.',
       });
     });
+
     it('should create a new user', async () => {
       usersRepository.findOne.mockResolvedValue(undefined);
       usersRepository.create.mockReturnValue(createAccountArgs);
@@ -117,6 +118,15 @@ describe('UserService', () => {
       );
 
       expect(result).toEqual({ ok: true });
+    });
+
+    it('should fail on exception', async () => {
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.createAccount(createAccountArgs);
+      expect(result).toEqual({
+        ok: false,
+        error: '계정을 생성할 수 없습니다.',
+      });
     });
   });
 });
