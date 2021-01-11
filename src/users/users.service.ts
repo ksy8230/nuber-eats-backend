@@ -73,7 +73,6 @@ export class UsersService {
           error: '비밀번호가 틀렸습니다.',
         };
       }
-      console.log(user);
       const token = this.JwtService.sign(user.id);
       return {
         ok: true,
@@ -121,7 +120,7 @@ export class UsersService {
         user.email = email;
         user.verified = false;
         const verification = await this.verifications.save(
-          this.verifications.create(user),
+          this.verifications.create({ user: user }),
         );
         this.mailService.sendVerificationEmail(user.email, verification.code);
       }
