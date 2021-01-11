@@ -115,7 +115,7 @@ export class UsersService {
 
     try {
       const user = await this.users.findOne(userId);
-      console.log('editProfile', user);
+      console.log('editProfile findOne 1', user);
       if (email) {
         user.email = email;
         user.verified = false;
@@ -129,6 +129,7 @@ export class UsersService {
       }
       // update 메서드는 쿼리를 db에 보낼 뿐 entity를 업데이트하지 않는다
       // save 메서드로 수정하고 js로 직접 업데이트 수정
+      console.log('editProfile findOne 2', user);
       await this.users.save(user);
       return {
         ok: true,
