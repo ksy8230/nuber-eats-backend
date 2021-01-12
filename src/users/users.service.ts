@@ -122,6 +122,7 @@ export class UsersService {
         const verification = await this.verifications.save(
           this.verifications.create({ user: user }),
         );
+        console.log(verification);
         this.mailService.sendVerificationEmail(user.email, verification.code);
       }
       if (password) {
@@ -156,7 +157,7 @@ export class UsersService {
           ok: true,
         };
       }
-      throw Error();
+      return { ok: false, error: '인증을 찾을 수 없습니다.' };
     } catch (error) {
       return {
         ok: false,
