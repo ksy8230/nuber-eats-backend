@@ -12,7 +12,13 @@ export class MailService {
     console.log('a', options);
     // this.sendEmail('testing', 'test');
   }
-  async sendEmail(subject: string, template: string, emailVars: EmailVar[]) {
+  async sendEmail(
+    subject: string,
+    template: string,
+    emailVars: EmailVar[],
+  ): Promise<boolean> {
+    // console.log(got);
+    // console.log(FormData);
     const form = new FormData();
     form.append('from', `mailgun@${this.options.domain}`);
     form.append('to', `${this.options.fromEmail}`);
@@ -22,12 +28,13 @@ export class MailService {
     form.append('template', template);
     // form.append('v:code', `asaswddf`);
     // form.append('v:username', `ksy`);
+
     emailVars.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value));
+    console.log('this.options=', this.options);
     try {
-      const response = await got(
+      await got.post(
         `https://api.mailgun.net/v3/${this.options.domain}/messages`,
         {
-          method: 'POST',
           headers: {
             Authorization: `Basic ${Buffer.from(
               `api:${this.options.apiKey}`,
@@ -36,9 +43,9 @@ export class MailService {
           body: form,
         },
       );
-      console.log('a', response.body);
+      return true;
     } catch (error) {
-      console.log(error);
+      return false;
     }
   }
 
