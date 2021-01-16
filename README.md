@@ -177,8 +177,8 @@ const verification = await this.verifications.findOne(
     },
     ...
 ```
-- unit test : 코드 각 줄이 의도한 대로 실행하는지
-- - `mock` 
+- unit test : 코드 각 줄이 의도한 대로 실행하는지 (결과가 아닌 동작을 테스트)
+- 외부 모듈 `mock`하는 법
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
