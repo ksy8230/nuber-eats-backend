@@ -189,6 +189,7 @@ const verification = await this.verifications.findOne(
   }
 ```
 - test용 database를 생성하여 실제 typeorm, 실제 db를 사용
+- beforeAll에서 테스트 시작 전에 유저 레파지토리 가져오는 법
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈

@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { getConnection } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 // 실제로 유저 생성을 (post)호출하면 이메일 인증 코드가 테스트 할 때마다 날아오기 때문에 post 를 모킹한다
 jest.mock('got', () => {
@@ -20,6 +22,7 @@ const testUser = {
 describe('UsersModule (e2e)', () => {
   let app;
   let jwtToken: string;
+  let usersRepository: Repository<User>;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +30,8 @@ describe('UsersModule (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
+    usersRepository = module.get(getRepositoryToken(User));
+
     await app.init();
   });
 
@@ -142,7 +147,80 @@ describe('UsersModule (e2e)', () => {
         });
     });
   });
-  it.todo('userProfile');
+
+  describe('profile', () => {
+    let userId: number;
+    beforeAll(async () => {
+      const [user] = await usersRepository.find();
+      userId = user.id;
+    });
+    it('should see a user profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+        {
+          userProfile(userId:${userId}) {
+            ok
+            error
+            user {
+              id
+            }
+          }
+        }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                userProfile: {
+                  ok,
+                  error,
+                  user: { id },
+                },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(id).toBe(userId);
+        });
+    });
+    it('should not find a user profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+        {
+          userProfile(userId:404) {
+            ok
+            error
+            user {
+              id
+            }
+          }
+        }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                userProfile: { ok, error, user },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toBe('유저를 찾을 수 없습니다.');
+          expect(user).toBe(null);
+        });
+    });
+  });
   it.todo('me');
   it.todo('verifyemail');
   it.todo('editProfile');
