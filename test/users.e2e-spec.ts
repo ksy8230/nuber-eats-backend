@@ -221,7 +221,55 @@ describe('UsersModule (e2e)', () => {
         });
     });
   });
-  it.todo('me');
+
+  describe('me', () => {
+    it('should find my profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+          {
+            me {
+              email
+            }
+          }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                me: { email },
+              },
+            },
+          } = res;
+          expect(email).toBe(testUser.email);
+        });
+    });
+    it('should not find my profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          {
+            me {
+              email
+            }
+          }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          console.log('aaa =', res.body);
+          const {
+            body: { errors },
+          } = res;
+          expect(errors[0].message).toBe('Forbidden resource');
+        });
+    });
+  });
   it.todo('verifyemail');
   it.todo('editProfile');
 
