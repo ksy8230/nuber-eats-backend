@@ -119,8 +119,9 @@ export class UsersService {
       if (email) {
         user.email = email;
         user.verified = false;
+        await this.verifications.delete({ user: { id: user.id } }); // 수정 전에 인증정보를 먼저 지워준다
         const verification = await this.verifications.save(
-          this.verifications.create({ user: user }),
+          this.verifications.create({ user: user }), // 여기에서 생성을 시키기 때문에 (인증정보는 아이디 1당 1개)
         );
         console.log(verification);
         this.mailService.sendVerificationEmail(user.email, verification.code);

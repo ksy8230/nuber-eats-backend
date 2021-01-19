@@ -42,7 +42,6 @@ export class UsersResolver {
   me(@AuthUser() authUser: User) {
     // AuthUser 는 현재 로그인한 사용자 정보를 준다
     // 데코레이터를 사용해서 authenticate된 유저를 담아준다
-    console.log(authUser);
     return authUser;
   }
 
