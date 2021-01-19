@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import { getConnection, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Verification } from 'src/users/entities/verification.entity';
 
 // 실제로 유저 생성을 (post)호출하면 이메일 인증 코드가 테스트 할 때마다 날아오기 때문에 post 를 모킹한다
 jest.mock('got', () => {
@@ -23,6 +24,7 @@ describe('UsersModule (e2e)', () => {
   let app;
   let jwtToken: string;
   let usersRepository: Repository<User>;
+  let verificationsRepository: Repository<Verification>;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,8 +32,10 @@ describe('UsersModule (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    usersRepository = module.get(getRepositoryToken(User));
-
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    verificationsRepository = module.get<Repository<Verification>>(
+      getRepositoryToken(Verification),
+    );
     await app.init();
   });
 
@@ -327,8 +331,70 @@ describe('UsersModule (e2e)', () => {
         });
     });
   });
-  it.todo('editProfile');
-  it.todo('verifyemail');
+
+  describe('verifyemail', () => {
+    let verificationCode: string;
+    beforeAll(async () => {
+      const [verification] = await verificationsRepository.find();
+      verificationCode = verification.code;
+    });
+    it('should verify email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+              mutation {
+                verifyEmail(input:{
+                  code:"${verificationCode}"
+                }){
+                  ok
+                  error
+                }
+              }
+            `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                verifyEmail: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it('should fail on verification code not found', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+              mutation {
+                verifyEmail(input:{
+                  code:"xxx"
+                }){
+                  ok
+                  error
+                }
+              }
+            `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                verifyEmail: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toBe('인증을 찾을 수 없습니다.');
+        });
+    });
+  });
 
   afterAll(async () => {
     await getConnection().dropDatabase();
