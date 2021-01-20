@@ -104,15 +104,15 @@ npm i joi
 
 - @InputType(), @ArgsType()의 차이
 - argument가 많은 resolver 함수 줄여서 사용하는 법 (dto 사용하기)
-
 #### User 모듈
-1. User Entity
+1. User 모델 (Entity)
 - id
 - createAt
 - updatedAt
 - email
 - password
 - role (client|owner|delivery)
+
 2. 비밀번호 bcrypt
 ```
 npm i bcrypt
@@ -190,6 +190,14 @@ const verification = await this.verifications.findOne(
 ```
 - test용 database를 생성하여 실제 typeorm, 실제 db를 사용
 - beforeAll에서 테스트 시작 전에 유저 레파지토리 가져오는 법
+
+
+#### Restaurant 모듈
+1. Restaurant 모델 (Entity)
+- name
+- category
+- address
+- coverImage
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
