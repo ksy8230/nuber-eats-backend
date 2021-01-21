@@ -4,7 +4,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Restaurant } from './restaurant.entity';
 
-@InputType({ isAbstract: true })
+@InputType('CategoryInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Category extends CoreEntity {
@@ -19,7 +19,7 @@ export class Category extends CoreEntity {
   @IsString()
   coverImg: string;
 
-  @Field(() => [Restaurant])
+  @Field(() => [Restaurant], { nullable: true })
   // 레스토랑과 카테고리는 1:N
   // 하나의 카테고리는 여러 레스토랑을 갖는다
   @OneToMany(() => Restaurant, (restaurant) => restaurant.category)
