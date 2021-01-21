@@ -35,8 +35,7 @@ export class Restaurant extends CoreEntity {
   })
   category: Category;
 
-  @Field(() => User)
-  // 많은 레스토랑은 하나의 유저를 갖는다
-  @ManyToOne(() => User, (user) => user.restaurants)
+  @Field((type) => User)
+  @ManyToOne((type) => User, (user) => user.restaurants)
   owner: User;
 }

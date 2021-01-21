@@ -40,9 +40,8 @@ export class User extends CoreEntity {
   @Field(() => Boolean)
   verified: boolean;
 
-  @Field(() => [Restaurant])
-  // 하나의 유저는 많은 레스토랑을 갖는다
-  @OneToMany(() => Restaurant, (restaurant) => restaurant.owner)
+  @Field((type) => [Restaurant])
+  @OneToMany((type) => Restaurant, (restaurant) => restaurant.owner)
   restaurants: Restaurant[];
 
   @BeforeInsert()
