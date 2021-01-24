@@ -2,6 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Role } from 'src/auth/role.decorator';
 import {
   VerifyEmailInput,
   VerifyEmailOutput,
@@ -38,7 +39,7 @@ export class UsersResolver {
   }
 
   @Query(() => User)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   me(@AuthUser() authUser: User) {
     // AuthUser 는 현재 로그인한 사용자 정보를 준다
     // 데코레이터를 사용해서 authenticate된 유저를 담아준다
@@ -46,15 +47,15 @@ export class UsersResolver {
   }
 
   @Query(() => UserProfileOutput)
-  @UseGuards(AuthGuard) // UseGuards가 있기 때문에 token의 유무에 따라 아래 요청이 가능하다
+  @Role(['Any'])
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
     return this.usersService.findById(userProfileInput.userId);
   }
 
-  @UseGuards(AuthGuard)
   @Mutation(() => EditProfileOut)
+  @Role(['Any'])
   async editProfile(
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput,

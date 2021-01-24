@@ -157,6 +157,21 @@ npm i jsonwebtoken @types/jsonwebtoken
 nest g mo auth
 ```
 - nextjs에서 제공하는 guard를 사용해서 auth 기능 사용하기
+- (refactor) app 모듈에 AuthModule을 연결해서 모든 서비스 함수에 `APP_GUARD` 추가하기
+- (refactor) role을 데코레이터 함수로 만들어서 모든 서비스 함수에 아래와 같은 식으로 사용자 권한(가드) 사용하기
+```
+@Role(['Owner'])
+async createRestaurant() {
+  ...
+}
+```
+- (refactor) AuthGuard 클래스에서 constructor에 reflector 변수를 활용하여 "Client" | "Owner" | "Delivery" | "Any" 들을 가져오고 케이스에 맞게 if문을 사용하여 true, false 반환
+- 6-1. rule
+- - role이 없으면 metadata가 없다는 의미이다 (user가 없다는 의미로 public 함수에서 사용) = return true
+- - graphqlContext에 user가 없으면 토큰이 없거나 토큰을 아예 보내지 않았다는 의미이다 = return false
+- - user이 있고 role이 any면 내 정보 조회와 같이 권한에 상관없이 모두가 사용 가능한 함수 사용 = return true
+- - user이 있고 role이 any가 아닌 다른 것들이면 레스토랑 생성과 같이 권한에 관련된 함수 사용 = return true
+
 
 7. verify email
 - service 파일에서 db 테이블간의 관계가 있을 때 관련된 다른 테이블 정보를 가져오고 싶으면 아래와 같이 기재. 

@@ -59,7 +59,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     }),
     UsersModule,
     RestaurantsModule,
-    // AuthModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
