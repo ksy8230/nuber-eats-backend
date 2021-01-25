@@ -229,6 +229,11 @@ const verification = await this.verifications.findOne(
 - Edit Dish
 - Delete Dish
 
+3. 레파지토리에서 확장시키기 (커스텀 레파지토리 만들기)
+- `CategoryRepository` 파트 부분
+- db 관련 함수를 추가로 확장시키고 싶을 때 사용하는 방법
+- ex. this.xxx.save, this.xxx.create, `this.xxx.getOrCreate (custom)`
+
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
