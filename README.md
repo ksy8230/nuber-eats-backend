@@ -213,6 +213,22 @@ const verification = await this.verifications.findOne(
 - category
 - address
 - coverImage
+- owner
+- ownerId (@RelationId 사용하여 owner의 id만 지정)
+
+2. 레스토랑 기능
+- See Categories
+- See Restaurants by Category (pagination)
+- See Restaurants (pagination)
+- See Restaurant
+
+- Edit Restaurant
+- Delete Restaurant
+
+- Create Dish
+- Edit Dish
+- Delete Dish
+
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
