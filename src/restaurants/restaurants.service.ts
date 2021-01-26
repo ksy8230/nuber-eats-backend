@@ -7,6 +7,10 @@ import {
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
 import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
+import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
@@ -73,7 +77,7 @@ export class RestaurantService {
       }
       await this.restaurants.save([
         {
-          id: editRestaurantInput.restaurantId,
+          id: editRestaurantInput.restaurantId, // id를 보내지 않으면 새로운 레스토랑을 생성
           ...editRestaurantInput,
           ...(category && { category: category }),
         },
@@ -83,6 +87,35 @@ export class RestaurantService {
       return {
         ok: false,
         error: '레스토랑을 수정할 수 없습니다',
+      };
+    }
+  }
+
+  async deleteRestaurant(
+    owner: User,
+    restaurantInput: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(
+        restaurantInput.restaurantId,
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: '레스토랑을 찾을 수 없습니다',
+        };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: '소유하지 않은 레스토랑을 삭제할 수 없습니다',
+        };
+      }
+      await this.restaurants.delete(restaurantInput.restaurantId);
+    } catch {
+      return {
+        ok: false,
+        error: '레스토랑을 삭제할 수 없습니다',
       };
     }
   }
