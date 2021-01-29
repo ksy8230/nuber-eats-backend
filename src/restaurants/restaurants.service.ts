@@ -16,6 +16,7 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { Category } from './entities/category.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -173,6 +174,28 @@ export class RestaurantService {
       return {
         ok: false,
         error: '카테고리를 로드할 수 없습니다',
+      };
+    }
+  }
+
+  async allRestaurants(
+    restaurantInput: RestaurantsInput,
+  ): Promise<RestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        skip: (restaurantInput.page - 1) * 25,
+        take: 25,
+      });
+      return {
+        ok: true,
+        results: restaurants,
+        totalPages: Math.ceil(totalResults / 25),
+        totalResults: totalResults,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: '레스토랑을 로드할 수 없습니다',
       };
     }
   }
