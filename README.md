@@ -234,6 +234,12 @@ const verification = await this.verifications.findOne(
 - db 관련 함수를 추가로 확장시키고 싶을 때 사용하는 방법
 - ex. this.xxx.save, this.xxx.create, `this.xxx.getOrCreate (custom)`
 
+### 모델 간의 관계
+- 하나의 레스토랑은 여러개의 메뉴를 갖는다 (oneToMany)
+- 하나 메뉴는 하나의 레스토랑을 갖는다 (ManyToOne)
+- 하나의 레스토랑은 하나의 카테고리를 갖는다 (oneToMany)
+- 하나의 카테고리는 여러개의 레스토랑을 갖는다 (ManyToOne)
+
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
