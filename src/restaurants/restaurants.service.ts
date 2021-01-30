@@ -4,6 +4,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { CreateDishInput } from './dtos/create-dish.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -23,6 +24,7 @@ import {
   SearchRestaurantOutput,
 } from './dtos/search-restaurant.dto';
 import { Category } from './entities/category.entity';
+import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
@@ -32,6 +34,8 @@ export class RestaurantService {
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
     private readonly categories: CategoryRepository,
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {}
 
   async createRestaurant(
@@ -207,7 +211,9 @@ export class RestaurantService {
 
   async findRestaurantById({ restaurantId }: RestaurantInput) {
     try {
-      const restaurant = await this.restaurants.findOne(restaurantId);
+      const restaurant = await this.restaurants.findOne(restaurantId, {
+        relations: ['menu'],
+      });
       if (!restaurant) {
         return {
           ok: false,
@@ -248,6 +254,37 @@ export class RestaurantService {
       return {
         ok: false,
         error: '레스토랑을 검색할 수 없습니다',
+      };
+    }
+  }
+
+  async createDish(owner: User, creatDishInput: CreateDishInput) {
+    try {
+      const restaurant = await this.restaurants.findOne(
+        creatDishInput.restaurantId,
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: '레스토랑이 없습니다',
+        };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: '해당 요리에 대한 소유권이 없습니다',
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create({ ...creatDishInput, restaurant }),
+      );
+      return {
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: '요리를 만들 수 없습니다',
       };
     }
   }
