@@ -21,68 +21,89 @@ export class OrderService {
     private readonly dishes: Repository<Dish>,
   ) {}
 
-  async crateOrder(
+  async createOrder(
     customer: User,
     { restaurantId, items }: CreateOrderInput,
   ): Promise<CreateOrderOutput> {
-    const restaurant = await this.restaurants.findOne(restaurantId);
-    if (!restaurant) {
-      return {
-        ok: false,
-        error: 'Restaurant not found',
-      };
-    }
-
-    for (const item of items) {
-      const dish = await this.dishes.findOne(item.dishId);
-      if (!dish) {
+    try {
+      const restaurant = await this.restaurants.findOne(restaurantId);
+      if (!restaurant) {
         return {
           ok: false,
-          error: 'Dish not found.',
+          error: 'Restaurant not found',
         };
       }
-      console.log(`Dish price: ${dish.price}`);
-      // 주문 생성에 넣은 각 옵션들 배회하며 금액 계산
-      for (const itemOption of item.options) {
-        /**
-         * 메뉴 옵션에서 db에 있는 옵션명 = 주문 생성에 입력된 옵션명이 같은 메뉴 옵션 찾기
-         */
-        const dishOption = dish.options.find(
-          (dishOption) => dishOption.name === itemOption.name,
-        );
-        if (dishOption) {
-          // 찾은 메뉴 옵션에 extra 프로퍼티 값 얻기
-          if (dishOption.extra) {
-            console.log(`$USD + ${dishOption.extra}`);
-          } else {
-            /**
-             * 메뉴 옵션의 초이스들에서 초이스의 이름 = 주문 생성에 입력된 초이스가 같은 메뉴 옵션 초이스 찾기
-             */
-            const dishOptionChoice = dishOption.choices.find(
-              (optionChoice) => optionChoice.name === itemOption.choice,
-            );
-            // 찾은 메뉴 옵션의 초이스에 extra 프로퍼티 값 얻기
-            if (dishOptionChoice) {
-              if (dishOptionChoice.extra) {
-                console.log(`$USD + ${dishOptionChoice.extra}`);
+      let orderFinalPrice = 0;
+      const orderItems: OrderItem[] = [];
+      for (const item of items) {
+        const dish = await this.dishes.findOne(item.dishId);
+        if (!dish) {
+          return {
+            ok: false,
+            error: 'Dish not found.',
+          };
+        }
+        let dishFinalPrice = dish.price;
+
+        // 주문 생성에 넣은 각 옵션들 배회하며 금액 계산
+        for (const itemOption of item.options) {
+          /**
+           * 메뉴 옵션에서 db에 있는 옵션명 = 주문 생성에 입력된 옵션명이 같은 메뉴 옵션 찾기
+           */
+          const dishOption = dish.options.find(
+            (dishOption) => dishOption.name === itemOption.name,
+          );
+          if (dishOption) {
+            // 찾은 메뉴 옵션에 extra 프로퍼티 값 얻기
+            if (dishOption.extra) {
+              console.log(`$USD + ${dishOption.extra}`);
+              dishFinalPrice = dishFinalPrice + dishOption.extra;
+            } else {
+              /**
+               * 메뉴 옵션의 초이스들에서 초이스의 이름 = 주문 생성에 입력된 초이스가 같은 메뉴 옵션 초이스 찾기
+               */
+              const dishOptionChoice = dishOption.choices.find(
+                (optionChoice) => optionChoice.name === itemOption.choice,
+              );
+              // 찾은 메뉴 옵션의 초이스에 extra 프로퍼티 값 얻기
+              if (dishOptionChoice) {
+                if (dishOptionChoice.extra) {
+                  console.log(`$USD + ${dishOptionChoice.extra}`);
+                  dishFinalPrice = dishFinalPrice + dishOptionChoice.extra;
+                }
               }
             }
           }
         }
+        orderFinalPrice = orderFinalPrice + dishFinalPrice;
+        console.log('orderFinalPrice', orderFinalPrice);
+
+        const orderItem = await this.orderItems.save(
+          this.orderItems.create({
+            dish,
+            options: item.options,
+          }),
+        );
+        orderItems.push(orderItem);
       }
-      /*await this.orderItems.save(
-        this.orderItems.create({
-          dish,
-          options: item.options,
+      const order = await this.orders.save(
+        this.orders.create({
+          customer,
+          restaurant,
+          total: orderFinalPrice,
+          items: orderItems,
         }),
-      ); */
+      );
+      console.log('order ===========', order);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: '주문 생성 할 수 없습니다',
+      };
     }
-    /* const order = await this.orders.save(
-      this.orders.create({
-        customer,
-        restaurant,
-      }),
-    );
-    console.log(order); */
   }
 }
