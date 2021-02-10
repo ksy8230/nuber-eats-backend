@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from 'src/auth/role.decorator';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
+import { EditOrderInput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
-import { Order } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
 
 @Injectable()
 export class OrderService {
@@ -109,6 +111,20 @@ export class OrderService {
     }
   }
 
+  canSeeOrder(user: User, order: Order): boolean {
+    let canSee = true;
+    if (user.role === UserRole.Client && order.customerId !== user.id) {
+      canSee = false;
+    }
+    if (user.role === UserRole.Delivery && order.driverId !== user.id) {
+      canSee = false;
+    }
+    if (user.role === UserRole.Owner && order.restaurant.ownerId !== user.id) {
+      canSee = false;
+    }
+    return canSee;
+  }
+
   async getOrders(user: User, { status }: GetOrdersInput) {
     try {
       let orders: Order[];
@@ -167,20 +183,8 @@ export class OrderService {
           error: 'Order not found.',
         };
       }
-      let canSee = true;
-      if (user.role === UserRole.Client && order.customerId !== user.id) {
-        canSee = false;
-      }
-      if (user.role === UserRole.Delivery && order.driverId !== user.id) {
-        canSee = false;
-      }
-      if (
-        user.role === UserRole.Owner &&
-        order.restaurant.ownerId !== user.id
-      ) {
-        canSee = false;
-      }
-      if (!canSee) {
+
+      if (!this.canSeeOrder(user, order)) {
         return {
           ok: false,
           error: '볼 수 없습니다',
@@ -194,6 +198,59 @@ export class OrderService {
       return {
         ok: false,
         error: 'Could not load order.',
+      };
+    }
+  }
+
+  async editOrder(user: User, { id: orderId, status }: EditOrderInput) {
+    try {
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: '주문이 없습니다',
+        };
+      }
+
+      if (!this.canSeeOrder(user, order)) {
+        return {
+          ok: false,
+          error: '볼 수 없습니다',
+        };
+      }
+      let canEdit = true;
+      if (user.role === UserRole.Owner) {
+        if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
+          canEdit = false;
+        }
+      }
+      if (user.role === UserRole.Delivery) {
+        if (
+          status !== OrderStatus.PickedUp &&
+          status !== OrderStatus.Delivered
+        ) {
+          canEdit = false;
+        }
+      }
+
+      if (!canEdit) {
+        return {
+          ok: true,
+          error: '수정할 수 없습니다',
+        };
+      }
+
+      await this.orders.save([{ id: orderId, status }]);
+
+      return {
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: '수정할 수 없습니다',
       };
     }
   }
