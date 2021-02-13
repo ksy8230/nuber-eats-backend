@@ -60,8 +60,16 @@ import { OrderItem } from './orders/entities/order-item.entity';
       ],
     }),
     GraphQLModule.forRoot({
+      installSubscriptionHandlers: true, // 서버가 웹소켓 기능을 가지게 한다
       autoSchemaFile: true,
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req, connection }) => {
+        console.log(connection);
+        if (req) {
+          return { user: req['user'] };
+        } else {
+          console.log(connection.context['X-JWT']);
+        }
+      },
     }),
     JwtModule.forRoot({ privateKey: process.env.TOKEN_SECRET }),
     MailModule.forRoot({

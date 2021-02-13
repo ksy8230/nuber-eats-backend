@@ -240,6 +240,15 @@ const verification = await this.verifications.findOne(
 - 하나의 레스토랑은 하나의 카테고리를 갖는다 (oneToMany)
 - 하나의 카테고리는 여러개의 레스토랑을 갖는다 (ManyToOne)
 
+### Subscript
+graphql에는 query와 mutation 그리고 subscription 이렇게 총 3가지 오퍼레이션 타입이 존재한다.   
+query: 데이터 조회를 위해서 사용   
+mutation: 데이터 변경을 위해서 사용   
+`subscription`: 실시간 어플리케이션 구현을 위해 사용   
+- query와 muation이 sever/client 모델을 따르는 반면, subscription은 pub/sub (발행/구독) 모델을 따른다.
+- query와 muation이 HTTP 프로토콜을 사용하는 반면, subscription은 Web Socket 프로토콜을 사용한다.
+- Web Socket을 사용하면 클라이언트는 서버와 연결 채널을 유지한 채로, 서버에서 발생하는 이벤트를 실시간으로 수신받을 수 있다.
+
 #### 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈
