@@ -60,7 +60,9 @@ export class OrderResolver {
   }
 
   @Subscription(() => String)
-  hot() {
+  @Role(['Any'])
+  hot(@AuthUser() user: User) {
+    console.log(user);
     return pubsub.asyncIterator('orderSubsription');
   }
 }

@@ -63,12 +63,11 @@ import { OrderItem } from './orders/entities/order-item.entity';
       installSubscriptionHandlers: true, // 서버가 웹소켓 기능을 가지게 한다
       autoSchemaFile: true,
       context: ({ req, connection }) => {
-        console.log(connection);
-        if (req) {
-          return { user: req['user'] };
-        } else {
-          console.log(connection.context['X-JWT']);
-        }
+        const TOKEN_KEY = 'x-jwt';
+        const TOKEN_KEY2 = 'X-JWT';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY2],
+        };
       },
     }),
     JwtModule.forRoot({ privateKey: process.env.TOKEN_SECRET }),
@@ -77,19 +76,12 @@ import { OrderItem } from './orders/entities/order-item.entity';
       domain: process.env.MAILGUN_DOMAIL_NAME,
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
+    AuthModule,
     UsersModule,
     RestaurantsModule,
-    AuthModule,
     OrdersModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  // 특정 라우트에만 사용하고 싶을 때 JwtMiddleware를 forRoutes 사용
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware)
-      .forRoutes({ path: '/graphql', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}
