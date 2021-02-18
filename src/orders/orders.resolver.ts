@@ -4,7 +4,7 @@ import { PubSub } from 'graphql-subscriptions';
 
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
-import { PUB_SUB } from 'src/common/common.constants';
+import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
 import { User } from 'src/users/entities/user.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
@@ -18,7 +18,7 @@ const pubsub = new PubSub();
 export class OrderResolver {
   constructor(
     private readonly ordersService: OrderService,
-    @Inject(PUB_SUB) private readonly pubsub: PubSub,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
   @Mutation(() => CreateOrderOutput)
@@ -58,16 +58,14 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
-  @Mutation(() => Boolean)
-  test() {
-    this.pubsub.publish('orderSubsription', { hot: 'love you' });
-    return true;
-  }
-
-  @Subscription(() => String)
-  @Role(['Any'])
-  hot(@AuthUser() user: User) {
-    console.log(user);
-    return this.pubsub.asyncIterator('orderSubsription');
+  @Subscription((returns) => Order, {
+    filter: (payload, _, context) => {
+      console.log(payload, context);
+      return true;
+    },
+  })
+  @Role(['Owner'])
+  pendingOrders() {
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
   }
 }
