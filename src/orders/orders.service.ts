@@ -102,7 +102,9 @@ export class OrderService {
         }),
       );
       console.log('order ===========', order);
-      await this.pubSub.publish(NEW_PENDING_ORDER, { pendingOrders: order }); // resolver의 이름
+      await this.pubSub.publish(NEW_PENDING_ORDER, {
+        pendingOrders: { order, ownerId: restaurant.ownerId },
+      }); // resolver의 이름
       return {
         ok: true,
         error: null,

@@ -60,8 +60,12 @@ export class OrderResolver {
 
   @Subscription((returns) => Order, {
     filter: (payload, _, context) => {
-      console.log(payload, context);
-      return true;
+      console.log('Subscription', payload, context);
+      console.log(payload.pendingOrders.ownerId === context.user.id);
+      return payload.pendingOrders.ownerId === context.user.id;
+    },
+    resolve: (payload) => {
+      return payload.pendingOrders.order;
     },
   })
   @Role(['Owner'])
