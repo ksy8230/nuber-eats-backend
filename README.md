@@ -240,6 +240,8 @@ const verification = await this.verifications.findOne(
 - 하나의 레스토랑은 하나의 카테고리를 갖는다 (oneToMany)
 - 하나의 카테고리는 여러개의 레스토랑을 갖는다 (ManyToOne)
 
+#### eager relation
+- `{ eager: true }` 은 디비에서 엔티티를 로드할 때마다 자동으로 로드되는 relationship을 의미한다.
 ## Subscription
 graphql에는 query / mutation / subscription 이렇게 총 3가지 오퍼레이션 타입이 존재한다.   
 query: 데이터 조회를 위해서 사용   
