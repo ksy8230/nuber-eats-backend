@@ -241,7 +241,10 @@ const verification = await this.verifications.findOne(
 - 하나의 카테고리는 여러개의 레스토랑을 갖는다 (ManyToOne)
 
 #### eager relation
-- `{ eager: true }` 은 디비에서 엔티티를 로드할 때마다 자동으로 로드되는 relationship을 의미한다.
+- 엔티티에서 `{ eager: true }` 옵션을 사용하면 디비에서 해당 엔티티를 로드할 때마다 자동으로 로드되는 relationship 효과를 얻을 수 있다.
+
+[예시 코드](https://github.com/ksy8230/nuber-eats-backend/commit/020842b8448be93729b505b264ed1994aae58740#diff-9231deae4e9daf94bbbd4adece01f22d5e7344da5c45955035d5ef6c2dcc1408)
+
 ## Subscription
 graphql에는 query / mutation / subscription 이렇게 총 3가지 오퍼레이션 타입이 존재한다.   
 query: 데이터 조회를 위해서 사용   
