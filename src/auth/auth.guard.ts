@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
     const graphqlContext = GqlExecutionContext.create(context).getContext();
-    console.log('graphqlContext = ', graphqlContext);
+    // console.log('graphqlContext = ', graphqlContext);
     const token = graphqlContext.token;
     if (token) {
       const decoded = this.jwtService.verify(token.toString());
