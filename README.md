@@ -255,6 +255,8 @@ mutation: 데이터 변경을 위해서 사용
 - Web Socket을 사용하면 클라이언트는 서버와 연결 채널을 유지한 채로, 서버에서 발생하는 이벤트를 실시간으로 수신받을 수 있다.
 
 [설치 및 연결 예시 코드](https://github.com/ksy8230/nuber-eats-backend/commit/af4a3b5f178764c487d927a4498ee7c4c31e2eaa)
+
+
 ## 이슈 리스트
 1. 이슈 : "id" 칼럼의 null 값이 not null 제약조건입니다
 - 원인 : 상속 받는 create-entity에게 id 값이 할당되지 않는 이슈

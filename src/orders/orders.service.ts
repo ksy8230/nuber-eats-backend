@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Mutation } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'graphql-subscriptions';
 import { Role } from 'src/auth/role.decorator';
@@ -16,6 +17,7 @@ import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { EditOrderInput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput } from './dtos/get-orders.dto';
+import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order, OrderStatus } from './entities/order.entity';
 
@@ -273,6 +275,37 @@ export class OrderService {
       return {
         ok: false,
         error: '수정할 수 없습니다',
+      };
+    }
+  }
+
+  async takeOrder(
+    driver: User,
+    takeOrderInput: TakeOrderInput,
+  ): Promise<TakeOrderOutput> {
+    try {
+      const order = await this.orders.findOne(takeOrderInput.id);
+      if (!order) {
+        return {
+          ok: false,
+          error: '주문을 찾을 수 없습니다.',
+        };
+      }
+      await this.orders.save({
+        id: takeOrderInput.id,
+        driver: driver,
+      });
+      await this.pubSub.publish(NEW_ORDER_UPDATE, {
+        orderUpdates: { ...order, driver },
+      });
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: '주문을 업데이트할 수 없습니다',
       };
     }
   }
